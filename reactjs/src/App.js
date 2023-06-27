@@ -4,8 +4,6 @@ import { useState } from "react";
 function formatNumber(input, prevInput) {
   let value = input.value;
   let pos = input.selectionStart;
-  console.log(pos);
-  console.log(prevInput);
 
   value = value.replace(/[()-]/g, "");
 
@@ -38,17 +36,13 @@ function formatNumber(input, prevInput) {
   if (!prevInput.includes("-") && formattedInput.includes("-")) {
     pos += 1;
   }
-  prevInput = formattedInput;
+  
   value = formattedInput.join("");
-  return [value, pos, prevInput];
+  return [value, pos];
 }
 
 export default function App() {
-  const initialValues = {
-    prevInput: [],
-    currentVal: "",
-  };
-  const [values, setValues] = useState(initialValues);
+  const [value, setValue] = useState("");
 
   return (
     <div className="App">
@@ -59,17 +53,17 @@ export default function App() {
           maxLength={16}
           placeholder="mobile number"
           autoComplete="off"
-          defaultValue={values.currentVal}
-          onInput={(e) => {
-            let [newNumber, newPos, prev] = formatNumber(
-              e.target,
-              values.prevInput
+          value={value}
+          onChange={(e) => {
+            const target = e.target
+            let [newNumber, newPos] = formatNumber(
+              target,
+              value
             );
-            setValues({
-              prevInput: prev,
-            });
-            e.target.value = newNumber;
-            e.target.setSelectionRange(newPos, newPos);
+            setValue(newNumber);
+            window.requestAnimationFrame(()=>{
+              target.setSelectionRange(newPos, newPos);
+            })
           }}
         />
         <div>
